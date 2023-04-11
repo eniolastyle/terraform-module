@@ -19,16 +19,29 @@ module "sg" {
 
 module "nic" {
   source      = "./modules/aws_nic"
+  for_each    = var.instance_config
   subnet_id   = module.subnet.subnet_id
-  private_ips = var.private_ips
-  nic_tag     = var.nic_tag
+  private_ips = each.value.private_ips
+  nic_tag     = each.value.nic_tag
 }
 
 module "instance" {
   source        = "./modules/aws_instance"
-  instance_ami  = var.instance_ami
-  instance_type = var.instance_type
-  nic_id        = module.nic.nic_id
-  # subnet_id = module.subnet.subnet_id
-  instance_tag = var.instance_tag
+  for_each      = var.instance_config
+  instance_ami  = each.value.instance_ami
+  instance_type = each.value.instance_type
+  nic_id        = module.nic[each.key].nic_id
+  instance_tag  = each.value.instance_tag
 }
+
+# module "instance_east_2" {
+#   source = "./modules/aws_instance"
+#   providers = {
+#     aws = aws.east_2
+#   }
+#   instance_ami  = var.instance_ami
+#   instance_type = var.instance_type
+#   nic_id        = module.nic.nic_id
+#
+#   instance_tag = var.instance_tag
+# }

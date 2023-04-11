@@ -73,3 +73,8 @@ variable "instance_type" {
 # variable "nic_id" {
 #     type = string
 # }
+
+# ----- config ------
+variable "instance_config" {
+  type = map(any)
+}
